@@ -1,9 +1,22 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import AppRouter from 'components/Router';
-import { authService } from 'fbase';
+import { authService, getAuth, onAuthStateChanged } from 'firebase/auth';
 
 function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(authService.currentUasr);
+  const [init, setInit] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const auth = getAuth();
+  const user = auth.currentUser;
+  useEffect(()=>{
+    onAuthStateChanged(auth, (user) => {
+      if (user){
+        setIsLoggedIn(true);
+      } else {
+        setIsLoggedIn(false);
+      }
+      setInit(true);
+    })
+  }, [])
   return (
     <>
     <AppRouter isLoggedIn={isLoggedIn}/>

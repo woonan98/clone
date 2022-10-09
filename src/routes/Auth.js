@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, GoogleAuthProvider, GithubAuthProvider, signInWithPopup } from 'firebase/auth';
 
 const Auth = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const [newAccount, setNewAccount] = useState(false)
+    const [newAccount, setNewAccount] = useState(true);
+    const [error, setError] = useState("");
     const auth = getAuth();
 
     const onChangeInput = (e) => {
@@ -19,21 +20,37 @@ const Auth = () => {
     
     const onSubmit = async(e) => {
         e.preventDefault();
-        try {    
+        try {
+            let data;
             if (newAccount){
-                const data = await createUserWithEmailAndPassword(
-                    email, password
+                data = await createUserWithEmailAndPassword(
+                    auth, email, password
                 );
             } else {
-                const data = await signInWithEmailAndPassword(
-                    email, password
+                data = await signInWithEmailAndPassword(
+                    auth, email, password
                 );
             }
             console.log(data);
         } catch (error){
-            console.log(error);
+            setError(error.message);
         }
     } 
+
+    const toggleNewAccount = () => setNewAccount((prev) => !prev);
+
+    const onSocialClick = async (e) => {
+        const {
+            target : { name },
+        } = e;
+        let provider;
+        if (name === "google") {
+            provider = new GoogleAuthProvider();
+        } else if (name === "github"){
+            provider = new GithubAuthProvider();
+        }
+        await signInWithPopup(auth, provider);
+    }
 
     return (
         <div>
@@ -60,9 +77,11 @@ const Auth = () => {
                     value={newAccount ? "Create Account" : "Log In"}
                 />
             </form>
+            <span onClick={toggleNewAccount}>{newAccount ? "Sign In" : "Create New Account"}</span>
+            {error}
             <div>
-                <button>Continue with Google</button>
-                <button>Continue with Github</button>
+                <button name="google" onClick={onSocialClick}>Continue with Google</button>
+                <button name="github" onClick={onSocialClick}>Continue with Github</button>
             </div>
         </div>
     )
