@@ -20,7 +20,7 @@ function App() {
   return (
     <>
     <AppRouter isLoggedIn={isLoggedIn}/>
-    <footer>@ 2020 Nwitter</footer>
+    <footer>@ 2022 Nwitter</footer>
     </>
   );
 }
