@@ -1,13 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { db } from 'fbase';
+import { db, storage } from 'fbase';
 import Nweet from 'components/Nweet';
 import { collection, addDoc, query, onSnapshot, orderBy } from 'firebase/firestore';
+import { ref, uploadString, getDownloadURL } from 'firebase/storage';
+import { v4 as uuidv4 } from 'uuid';
 
 const Home = ({ userObj }) => {
     const [nweet, setNweet] = useState("");
     const [nweets, setNweets] = useState([]);
-    const [attachment, setAttachment] = useState();
+    const [attachment, setAttachment] = useState("");
 
+    
     useEffect(()=>{
         const q = query(collection(db, "nwitter"),
         orderBy("createdAt", "desc"));
@@ -21,16 +24,26 @@ const Home = ({ userObj }) => {
     },[])
     const onSubmit = async(e) => {
         e.preventDefault();
+        let attachmentUrl = "";
         try {
-            const docRef = await addDoc(collection(db, "nwitter"), {
+            if (attachment !== ""){
+                const imageRef = ref(storage, `${userObj.uid}/${uuidv4()}`);
+                const response = await uploadString(imageRef, attachment, "data_url");
+                attachmentUrl = await getDownloadURL(response.ref);
+            }
+            const nweetObj = {
                 text : nweet,
                 createdAt : Date.now(),
-                creatorId : userObj.uid
-            });
+                creatorId : userObj.uid,
+                attachmentUrl,
+            }
+            await addDoc(collection(db, "nwitter"), nweetObj);
+            setNweet("");
+            setAttachment("");
+    
         }catch(error){
             console.error("errorMessage :", error);
         }
-        setNweet("");
     };
     const onChange = ({ target : {value} }) => {
         setNweet(value);
