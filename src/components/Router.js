@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { HashRouter as Router, Route, Routes } from 'react-router-dom';
 import Auth from 'routes/Auth';
 import Home from 'routes/Home';
@@ -14,7 +14,7 @@ const AppRouter = ({ isLoggedIn, userObj }) => {
                 {isLoggedIn ? 
                     <>
                     <Route path="/" element={<Home userObj={userObj} isOwner={Nweet.createId === userObj.uid} />} />
-                    <Route path="/profile" element={<Profile/>}/>
+                    <Route path="/profile" element={<Profile userObj={userObj} />}/>
                     </>
                     : 
                     <Route path="/" element={<Auth />} />

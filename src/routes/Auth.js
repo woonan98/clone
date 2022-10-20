@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, GoogleAuthProvider, GithubAuthProvider, signInWithPopup } from 'firebase/auth';
+import { authService } from 'fbase';
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, GoogleAuthProvider, GithubAuthProvider, signInWithPopup } from 'firebase/auth';
 
 const Auth = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [newAccount, setNewAccount] = useState(true);
     const [error, setError] = useState("");
-    const auth = getAuth();
 
     const onChangeInput = (e) => {
         const { target : { name, value }
@@ -24,11 +24,11 @@ const Auth = () => {
             let data;
             if (newAccount){
                 data = await createUserWithEmailAndPassword(
-                    auth, email, password
+                    authService, email, password
                 );
             } else {
                 data = await signInWithEmailAndPassword(
-                    auth, email, password
+                    authService, email, password
                 );
             }
             console.log(data);
@@ -49,7 +49,7 @@ const Auth = () => {
         } else if (name === "github"){
             provider = new GithubAuthProvider();
         }
-        await signInWithPopup(auth, provider);
+        await signInWithPopup(authService, provider);
     }
 
     return (
