@@ -7,21 +7,30 @@ function App() {
   const [init, setInit] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userObj, setUserObj] = useState(null);
-  /* const user = authService.currentUser; */
   useEffect(()=>{
     onAuthStateChanged(authService, (user) => {
       if (user){
         setIsLoggedIn(true);
-        setUserObj(user);
+        setUserObj({
+          displayName : user.displayName,
+          uid: user.uid,
+        });
       } else {
         setIsLoggedIn(false);
       }
       setInit(true);
     })
-  }, [])
+  }, []);
+  const refreshUser = () => {
+    const user = authService.currentUser;
+    setUserObj({
+      displayName: user.displayName,
+      uid: user.uid,
+    });
+  }
   return (
     <>
-    { init ? <Router isLoggedIn={isLoggedIn} userObj={userObj} /> : "Initalizing..." }
+    { init ? <Router refreshUser={refreshUser} isLoggedIn={isLoggedIn} userObj={userObj} /> : "Initalizing..." }
     <footer>@ 2022 Nwitter</footer>
     </>
   );

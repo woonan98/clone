@@ -6,15 +6,15 @@ import Profile from 'routes/Profile';
 import Navigation from 'components/Navigation';
 import Nweet from './Nweet';
 
-const AppRouter = ({ isLoggedIn, userObj }) => {
+const AppRouter = ({ refreshUser, isLoggedIn, userObj }) => {
     return (
         <Router>
-            { isLoggedIn && <Navigation/> }
+            { isLoggedIn && <Navigation userObj={userObj}/> }
             <Routes>
                 {isLoggedIn ? 
                     <>
                     <Route path="/" element={<Home userObj={userObj} isOwner={Nweet.createId === userObj.uid} />} />
-                    <Route path="/profile" element={<Profile userObj={userObj} />}/>
+                    <Route path="/profile" element={<Profile refreshUser={refreshUser} userObj={userObj} />}/>
                     </>
                     : 
                     <Route path="/" element={<Auth />} />
